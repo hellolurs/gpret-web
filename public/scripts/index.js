@@ -26,17 +26,19 @@ import Contact from '/scripts/contact.js';
     });
   };
 
+  // console.log('LOADDD')
   ////NAVIGATION
   // const meteringNavigation = () => {
   const metnavItems = document.querySelectorAll('.metnav-item');
   const metnavTitle = document.querySelector('.metnav-title');
+  let activeNavPos = 0;
 
   const getActiveNavPos = () => {
     let posX = 0;
     metnavItems.forEach((item) => {
       if (item.classList.contains('active')) posX = item.offsetLeft;
     });
-
+    activeNavPos = posX;
     return posX;
   };
 
@@ -68,19 +70,23 @@ import Contact from '/scripts/contact.js';
 
   const metnavContainer = document.querySelector('.metering-nav');
   const metnavArrow = document.querySelector('.metnav-arrow');
-  metnavArrow.style = `transform: translate3d(${
-    getActiveNavPos() - 8
-  }px,0,0); opacity: 1`;
+  let metnavContainerLeft = metnavContainer.getBoundingClientRect().left
+  // metnavArrow.style = `transform: translate3d(${
+  //   getActiveNavPos() - 8
+  // }px,0,0); opacity: 1`;
+  window.addEventListener('resize', () => {
+    const left = metnavContainer.getBoundingClientRect().left
+    metnavContainerLeft = left
+    metnavArrow.style.transform = `translate3d(${activeNavPos + left - 8}px,0,0)`;
+  })
 
   metnavContainer.addEventListener('mousemove', (e) => {
-    const metnavContainerWidth = metnavContainer.scrollWidth;
-    const cursorPos = e.layerX + metnavContainerWidth / 2;
-    // console.log();
+    const cursorPos = e.clientX;
     metnavArrow.style.transform = `translate3d(${cursorPos - 8}px,0,0)`;
   });
 
   metnavContainer.addEventListener('mouseleave', () => {
-    metnavArrow.style.transform = `translate3d(${getActiveNavPos() - 8}px,0,0)`;
+    metnavArrow.style.transform = `translate3d(${activeNavPos + metnavContainerLeft - 8}px,0,0)`;
   });
   // };
   // meteringNavigation();
@@ -92,9 +98,11 @@ import Contact from '/scripts/contact.js';
       if (namespace.includes(item.innerText.toLowerCase()))
         item.classList.add('active');
     });
-    metnavArrow.style = `transform: translate3d(${
-      getActiveNavPos() - 8
-    }px,0,0); opacity: 1`;
+
+    getActiveNavPos();
+    const left = metnavContainer.getBoundingClientRect().left
+    metnavArrow.style = `transform: translate3d(${activeNavPos - 8 + left
+      }px,0,0); opacity: 1`;
   };
 
   ////BURGER MENU
@@ -208,7 +216,7 @@ import Contact from '/scripts/contact.js';
   });
 
   const initScrollFollow = () => {
-    console.log('SCROLL FOLLOW');
+    // console.log('SCROLL FOLLOW');
     scrollFollowItems = document.querySelectorAll('[data-scroll]');
     //NEED TO GET INITIAL GETBOUNDREACT OUT OF SCROLL EVENT
     let _scrollFollowItemsBoundClientRect = [];
@@ -261,7 +269,7 @@ import Contact from '/scripts/contact.js';
     // lenis.destroy();
     menu && menu.classList.remove('active');
     lenis.resize();
-    lenis.scrollTo(0, {immediate: true});
+    lenis.scrollTo(0, { immediate: true });
     initNavigateButton();
     initHoverCapture();
     initScrollFollow();
@@ -269,12 +277,11 @@ import Contact from '/scripts/contact.js';
   };
 
   const animateFadeActivityToDetail = () => {
-    console.log('FADE TO DETAIL');
+    // console.log('FADE TO DETAIL');
     const linkButtons = document.querySelectorAll('#activity .ac-btn');
 
     linkButtons.forEach((item) => {
       item.addEventListener('click', (e) => {
-        console.log('lcik');
         const parentContent =
           e.target.parentElement.parentElement.parentElement;
         const title = parentContent.querySelector('.ac-title');
@@ -298,8 +305,8 @@ import Contact from '/scripts/contact.js';
 
         // console.log();
 
-        gsap.set(parentContent, {opacity: 0});
-        gsap.set('.container-detail', {'content-visibility': 'visible'});
+        gsap.set(parentContent, { opacity: 0 });
+        gsap.set('.container-detail', { 'content-visibility': 'visible' });
         gsap.from('.container-detail .title', 1, {
           left: titleRect.x,
           top: titleRect.y,
@@ -378,7 +385,6 @@ import Contact from '/scripts/contact.js';
           data.current.container.remove();
         },
         enter(data) {
-          updateActiveMeteringNavigation(data.next.namespace);
           updateActiveMenu(data.next.namespace);
           return gsap.from(data.next.container, {
             opacity: 0,
@@ -386,6 +392,7 @@ import Contact from '/scripts/contact.js';
           });
         },
         after() {
+          updateActiveMeteringNavigation(data.next.namespace);
           animateFadePage.fadeOut();
           initAnimation();
         },
@@ -410,7 +417,6 @@ import Contact from '/scripts/contact.js';
           });
         },
         enter(data) {
-          updateActiveMeteringNavigation(data.next.namespace);
           updateActiveMenu(data.next.namespace);
           data.current.container.remove();
           initHomeAnimation();
@@ -420,6 +426,7 @@ import Contact from '/scripts/contact.js';
           });
         },
         after() {
+          updateActiveMeteringNavigation(data.next.namespace);
           animateFadePage.fadeOut();
         },
         once(data) {
@@ -432,19 +439,18 @@ import Contact from '/scripts/contact.js';
       },
       {
         name: 'activity-detail',
-        from: {namespace: ['activity']},
-        to: {namespace: ['activity-detail']},
-        beforeLeave() {},
+        from: { namespace: ['activity'] },
+        to: { namespace: ['activity-detail'] },
+        beforeLeave() { },
         leave(data) {
           animateFadeActivityToDetail();
-          console.log('BEFORE');
           return gsap.to(data.current.container, {
             delay: 0.5,
           });
         },
         enter(data) {
           data.current.container.remove();
-          lenis.scrollTo(0, {immediate: true});
+          lenis.scrollTo(0, { immediate: true });
           lenis.resize();
           return gsap.from(data.next.container, {
             duration: 0.01,
