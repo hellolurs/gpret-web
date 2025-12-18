@@ -124,6 +124,24 @@ body {
   z-index: 450;
 }
 
+nav {
+  position: relative;
+}
+nav .metnav-arrow {
+  content: "";
+  background-color: transparent;
+  position: fixed;
+  z-index: 100;
+  top: 0px;
+  transform: translate(-10px, 0);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid white;
+  transition: all 1s cubic-bezier(0.03, 0.98, 0.52, 0.99) 0s;
+  opacity: 0;
+}
 nav .metering-nav {
   position: fixed;
   transform: translate(-50%, 0%);
@@ -170,20 +188,6 @@ nav .metering-nav .metnav-container .metnav-item > span {
 nav .metering-nav .metnav-container .metnav-item.active {
   background-color: #fc973b;
   color: white;
-}
-nav .metering-nav .metnav-container .metnav-arrow {
-  content: "";
-  background-color: transparent;
-  position: absolute;
-  top: -20px;
-  transform: translate(-10px, 0);
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 12px solid white;
-  transition: all 1s cubic-bezier(0.03, 0.98, 0.52, 0.99) 0s;
-  opacity: 0;
 }
 nav .metering-nav .metnav-container .metnav-title {
   position: absolute;
